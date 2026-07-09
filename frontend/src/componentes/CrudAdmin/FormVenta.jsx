@@ -18,7 +18,7 @@ export const FormVenta = ({ venta, onClose }) => {
     try {
       if (esEdicion) {
         await axios.put(
-          `http://localhost:8082/api/v1/ventas/${venta.idVenta}`,
+          `/api/v1/ventas/${venta.idVenta}`,
           jsonData,
           {
             headers: {
@@ -28,7 +28,7 @@ export const FormVenta = ({ venta, onClose }) => {
           }
         );
       } else {
-        await axios.post("http://localhost:8082/api/v1/ventas", jsonData, {
+        await axios.post("/api/v1/ventas", jsonData, {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",

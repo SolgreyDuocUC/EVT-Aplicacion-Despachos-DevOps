@@ -10,7 +10,7 @@ export const TableCompras = () => {
   const [ventas, setVentas] = useState([]);
 
   const compras = async () => {
-    await axios.get("http://localhost:8082/api/v1/ventas", {
+    await axios.get("/api/v1/ventas", {
       headers:{
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -62,7 +62,7 @@ export const TableCompras = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8082/api/v1/ventas/${idVenta}`);
+      await axios.delete(`/api/v1/ventas/${idVenta}`);
       setVentas(ventas.filter((v) => v.idVenta !== idVenta));
       Swal.fire({
         title: "Venta eliminada",

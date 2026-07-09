@@ -10,7 +10,7 @@ export const TableDespachos = () => {
 
   const despacho = async () => {
     await axios
-      .get("http://localhost:8081/api/v1/despachos", {
+      .get("/api/v1/despachos", {
         headers:{
               'Content-Type': 'application/json',
               'Accept': 'application/json'
@@ -48,7 +48,7 @@ export const TableDespachos = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8081/api/v1/despachos/${idDespacho}`);
+      await axios.delete(`/api/v1/despachos/${idDespacho}`);
       setDespachos(despachos.filter((d) => d.idDespacho !== idDespacho));
       Swal.fire({
         title: "Despacho eliminado",
