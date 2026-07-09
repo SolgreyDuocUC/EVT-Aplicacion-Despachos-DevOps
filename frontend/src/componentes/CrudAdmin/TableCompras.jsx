@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal } from "./Modal";
 import { FormDespacho } from "./FormDespacho";
-import { FormVenta } from "./FormVenta";
+import { FormCrudVenta } from "./FormCrudVenta";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
@@ -196,9 +196,12 @@ export const TableCompras = () => {
         }}
         open={openModalVenta}
       >
-        <FormVenta
-          venta={ventaEnEdicion}
+        <FormCrudVenta
+          ventaAEditar={ventaEnEdicion}
           onClose={() => {
+            setOpenModalVenta(false);
+          }}
+          onSuccess={() => {
             setOpenModalVenta(false);
             compras();
           }}
