@@ -4,21 +4,31 @@ import { FormDespacho } from "./FormDespacho";
 import { FormCrudVenta } from "./FormCrudVenta";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, PencilSquareIcon, PlusIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export const TableCompras = () => {
   const [ventas, setVentas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const compras = async () => {
-    await axios.get("/api/v1/ventas", {
-      headers:{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-  }
-    }).then((response) => {
-      console.log(response.data);
-      setVentas(response.data);
-    });
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get("/api/v1/ventas", {
+        headers:{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      console.log("Compras recibidas:", response.data);
+      setVentas(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error("Error al obtener ventas:", err);
+      setError("No se pudieron cargar las órdenes de compra. Es posible que el servidor o la base de datos aún se estén inicializando.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -88,14 +98,40 @@ export const TableCompras = () => {
             <h3 className="text-lg font-bold text-slate-800">Órdenes de Compra</h3>
             <p className="text-sm text-slate-500 mt-1">Gestiona las ventas registradas y genera despachos.</p>
           </div>
-          <button
-            onClick={handleAbrirModalCrearVenta}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-all duration-200 transform active:scale-95"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Nueva Venta
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={compras}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-sm transition-all duration-200 active:scale-95 disabled:opacity-50"
+              title="Actualizar datos"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin text-teal-600' : 'text-slate-500'}`} />
+              Actualizar
+            </button>
+            <button
+              onClick={handleAbrirModalCrearVenta}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-all duration-200 transform active:scale-95"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Nueva Venta
+            </button>
+          </div>
         </div>
+
+        {error && (
+          <div className="p-4 mx-6 my-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 flex justify-between items-center text-sm animate-fade-in">
+            <div>
+              <span className="font-semibold block">⚠️ Aviso de carga</span>
+              {error}
+            </div>
+            <button
+              onClick={compras}
+              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg shadow-sm transition-colors text-xs whitespace-nowrap ml-4"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -110,63 +146,76 @@ export const TableCompras = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {ventas.map((venta) => (
-                  <tr key={venta.idVenta} className="hover:bg-slate-50/80 transition-colors group">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">
-                      #{venta.idVenta}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600">
-                      {venta.direccionCompra}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-slate-500">
-                      {venta.fechaCompra}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">
-                      ${venta.valorCompra}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                        ${venta.despachoGenerado
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                          : 'bg-amber-100 text-amber-800 border border-amber-200'}`}>
-                        {venta.despachoGenerado ? "Despachada" : "Pendiente"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end gap-2">
-                      <button
-                        onClick={() => handleAbrirModalDespacho(venta)}
-                        disabled={venta.despachoGenerado}
-                        className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm transition-all duration-200 transform active:scale-95
-                          ${venta.despachoGenerado
-                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                            : 'text-white bg-teal-500 hover:bg-teal-600 shadow-teal-500/20'
-                          }`}
-                      >
-                        Generar Despacho
-                      </button>
-                      <button
-                        onClick={() => handleAbrirModalEditarVenta(venta)}
-                        className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Editar Venta"
-                      >
-                        <PencilSquareIcon className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleEliminarVenta(venta.idVenta)}
-                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Eliminar Venta"
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              {ventas.length === 0 && (
+              {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
-                    No hay ventas registradas.
+                  <td colSpan="6" className="px-6 py-16 text-center text-slate-500 font-medium">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <ArrowPathIcon className="w-8 h-8 text-teal-600 animate-spin" />
+                      <span>Cargando órdenes de compra...</span>
+                    </div>
                   </td>
                 </tr>
+              ) : (
+                <>
+                  {ventas.map((venta) => (
+                    <tr key={venta.idVenta} className="hover:bg-slate-50/80 transition-colors group">
+                      <td className="px-6 py-4 whitespace-nowrap font-medium text-slate-900">
+                        #{venta.idVenta}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {venta.direccionCompra}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-slate-500">
+                        {venta.fechaCompra}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-emerald-600">
+                        ${venta.valorCompra}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                          ${venta.despachoGenerado
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                            : 'bg-amber-100 text-amber-800 border border-amber-200'}`}>
+                          {venta.despachoGenerado ? "Despachada" : "Pendiente"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end gap-2">
+                        <button
+                          onClick={() => handleAbrirModalDespacho(venta)}
+                          disabled={venta.despachoGenerado}
+                          className={`inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm transition-all duration-200 transform active:scale-95
+                            ${venta.despachoGenerado
+                              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                              : 'text-white bg-teal-500 hover:bg-teal-600 shadow-teal-500/20'
+                            }`}
+                        >
+                          Generar Despacho
+                        </button>
+                        <button
+                          onClick={() => handleAbrirModalEditarVenta(venta)}
+                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                          title="Editar Venta"
+                        >
+                          <PencilSquareIcon className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleEliminarVenta(venta.idVenta)}
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Eliminar Venta"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {ventas.length === 0 && !error && (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                        No hay ventas registradas. Haz clic en "Nueva Venta" o pulsa "Actualizar".
+                      </td>
+                    </tr>
+                  )}
+                </>
               )}
             </tbody>
           </table>

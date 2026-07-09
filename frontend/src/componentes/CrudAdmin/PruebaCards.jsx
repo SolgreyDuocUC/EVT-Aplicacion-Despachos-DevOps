@@ -7,6 +7,7 @@ import { ShoppingCartIcon, TruckIcon } from "@heroicons/react/24/outline";
 export const PruebaCards = () => {
   const [tablaCompras, setTablaCompras] = useState(false);
   const [tablaOrdenes, setTablaOrdenes] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <section className="animate-fade-in-up">
@@ -21,6 +22,7 @@ export const PruebaCards = () => {
           onClick={() => {
             setTablaCompras(true);
             setTablaOrdenes(false);
+            setRefreshKey((prev) => prev + 1);
           }}
         />
         <CardComponent
@@ -32,6 +34,7 @@ export const PruebaCards = () => {
           onClick={() => {
             setTablaCompras(false);
             setTablaOrdenes(true);
+            setRefreshKey((prev) => prev + 1);
           }}
         />
       </div>
@@ -40,12 +43,12 @@ export const PruebaCards = () => {
       <section className="transition-all duration-500 ease-in-out">
         {tablaCompras && (
           <div className="animate-fade-in">
-            <TableCompras />
+            <TableCompras key={`compras-${refreshKey}`} />
           </div>
         )}
         {tablaOrdenes && (
           <div className="animate-fade-in">
-            <TableDespachos />
+            <TableDespachos key={`despachos-${refreshKey}`} />
           </div>
         )}
       </section>
