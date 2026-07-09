@@ -25,14 +25,14 @@ export const FormDespacho = ({ venta, onClose }) => {
     console.log("Datos del formulario:", jsonData);
 
     try {
-      await axios.post("http://localhost:8081/api/v1/despachos", jsonData, {
+      await axios.post("/api/v1/despachos", jsonData, {
         headers:{
           'Content-Type': 'application/json',
           'Accept': 'application/json'
     }
       });
       await axios.put(
-        `http://localhost:8082/api/v1/ventas/${venta.idVenta}`,
+        `/api/v1/ventas/${venta.idVenta}`,
         jsonDataSales,
         {
           headers:{

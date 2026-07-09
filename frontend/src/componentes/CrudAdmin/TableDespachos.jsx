@@ -3,14 +3,15 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Modal } from "./Modal";
 import { FormCierreDespacho } from "./FormCierreDespacho";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { FormCrudDespacho } from "./FormCrudDespacho";
+import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 export const TableDespachos = () => {
   const [despachos, setDespachos] = useState([]);
 
   const despacho = async () => {
     await axios
-      .get("http://localhost:8081/api/v1/despachos", {
+      .get("/api/v1/despachos", {
         headers:{
               'Content-Type': 'application/json',
               'Accept': 'application/json'
@@ -34,6 +35,19 @@ export const TableDespachos = () => {
     setOpenModal(true);
   };
 
+  const [openModalCrud, setOpenModalCrud] = useState(false);
+  const [despachoAEditar, setDespachoAEditar] = useState(null);
+
+  const handleAbrirModalCrear = () => {
+    setDespachoAEditar(null);
+    setOpenModalCrud(true);
+  };
+
+  const handleAbrirModalEditar = (desp) => {
+    setDespachoAEditar(desp);
+    setOpenModalCrud(true);
+  };
+
   const handleEliminarDespacho = async (idDespacho) => {
     const confirmacion = await Swal.fire({
       title: "¿Eliminar despacho?",
@@ -48,7 +62,7 @@ export const TableDespachos = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8081/api/v1/despachos/${idDespacho}`);
+      await axios.delete(`/api/v1/despachos/${idDespacho}`);
       setDespachos(despachos.filter((d) => d.idDespacho !== idDespacho));
       Swal.fire({
         title: "Despacho eliminado",
@@ -74,6 +88,13 @@ export const TableDespachos = () => {
             <h3 className="text-lg font-bold text-slate-800">Órdenes de Despacho Activas</h3>
             <p className="text-sm text-slate-500 mt-1">Listado de despachos en curso, entregados o con intentos fallidos.</p>
           </div>
+          <button
+            onClick={handleAbrirModalCrear}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-all duration-200 transform active:scale-95"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Nuevo Despacho
+          </button>
         </div>
         
         <div className="overflow-x-auto">
@@ -134,6 +155,13 @@ export const TableDespachos = () => {
                       {despachoItem.despachado ? 'Cerrado' : 'Gestionar'}
                     </button>
                     <button
+                      onClick={() => handleAbrirModalEditar(despachoItem)}
+                      className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                      title="Editar Despacho"
+                    >
+                      <PencilSquareIcon className="w-5 h-5" />
+                    </button>
+                    <button
                       onClick={() => handleEliminarDespacho(despachoItem.idDespacho)}
                       className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                       title="Eliminar Despacho"
@@ -170,6 +198,24 @@ export const TableDespachos = () => {
             }}
           />
         )}
+      </Modal>
+
+      <Modal
+        onClose={() => {
+          setOpenModalCrud(false);
+        }}
+        open={openModalCrud}
+      >
+        <FormCrudDespacho
+          despachoAEditar={despachoAEditar}
+          onClose={() => {
+            setOpenModalCrud(false);
+          }}
+          onSuccess={() => {
+            setOpenModalCrud(false);
+            despacho();
+          }}
+        />
       </Modal>
     </>
   );
