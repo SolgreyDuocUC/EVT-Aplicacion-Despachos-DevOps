@@ -8,15 +8,16 @@ export const FormCierreDespacho = ({ despacho, onClose }) => {
   const onSubmit = async (data) => {
     console.log("onSubmit ejecutado");
     const jsonData = {
+      ...despacho,
       intento: data.intento,
-      despachado: data.despachado,
+      despachado: data.despachado === "true",
     };
 
     console.log("Datos del formulario:", jsonData);
 
     try {
       await axios.put(
-        `http://192.168.320/api/v1/despachos/${despacho.idDespacho}`,
+        `http://localhost:8081/api/v1/despachos/${despacho.idDespacho}`,
         jsonData,
         {
           headers:{
@@ -33,6 +34,12 @@ export const FormCierreDespacho = ({ despacho, onClose }) => {
       });
     } catch (error) {
       console.error("Error en la solicitud:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo modificar el despacho. Intenta nuevamente.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
     }
     onClose();
   };
@@ -81,7 +88,7 @@ export const FormCierreDespacho = ({ despacho, onClose }) => {
             type="number"
             defaultValue={despacho.intento}
             className="border border-gray-300 rounded-lg block w-full  p-1"
-            {...register("intento", { required: true })}
+            {...register("intento", { required: true, valueAsNumber: true })}
           />
         </div>
         <div className="mb-5">

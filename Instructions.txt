@@ -1,0 +1,85 @@
+====================================================================
+GUÍA DE INSTRUCCIONES Y COMANDOS DOCKER - APP DESPACHOS
+====================================================================
+
+Esta guía contiene los comandos necesarios para desplegar, gestionar
+y solucionar problemas de la aplicación usando Docker Compose.
+
+--------------------------------------------------------------------
+1. PREPARACIÓN DEL ENTORNO
+--------------------------------------------------------------------
+Antes de ejecutar los contenedores, asegúrate de haber configurado
+las variables de entorno necesarias:
+1. Copia el archivo de ejemplo a un nuevo archivo .env:
+   $ cp .env.example .env
+2. Edita el archivo .env con tus credenciales y configuración preferida.
+
+--------------------------------------------------------------------
+2. LEVANTAR LA APLICACIÓN (START)
+--------------------------------------------------------------------
+Para construir las imágenes y levantar todos los servicios 
+(MySQL, ms-despacho, ms-ventas, frontend) en segundo plano:
+
+   $ docker-compose up -d --build
+
+- "-d": Ejecuta los contenedores en segundo plano (detached mode).
+- "--build": Fuerza a Docker a reconstruir las imágenes si hay 
+             cambios en el código.
+
+Nota: La base de datos MySQL tardará unos segundos en inicializarse.
+Los microservicios esperarán automáticamente a que esté lista gracias
+a la condición "service_healthy".
+
+--------------------------------------------------------------------
+3. VER EL ESTADO Y LOGS DE LOS CONTENEDORES
+--------------------------------------------------------------------
+Para ver el estado de los contenedores activos:
+   $ docker-compose ps
+
+Para ver los logs de TODOS los servicios en tiempo real:
+   $ docker-compose logs -f
+
+Para ver los logs de un servicio ESPECÍFICO en tiempo real:
+   $ docker-compose logs -f [nombre-del-servicio]
+   Ejemplo: $ docker-compose logs -f ms-despacho
+
+--------------------------------------------------------------------
+4. DETENER Y ELIMINAR CONTENEDORES (STOP / DOWN)
+--------------------------------------------------------------------
+Para detener los contenedores (sin borrarlos):
+   $ docker-compose stop
+
+Para detener y eliminar los contenedores y la red creada:
+   $ docker-compose down
+
+Si también quieres ELIMINAR LOS DATOS DE LA BASE DE DATOS (volúmenes):
+   $ docker-compose down -v
+
+--------------------------------------------------------------------
+5. REINICIAR SERVICIOS
+--------------------------------------------------------------------
+Si realizaste un cambio mínimo o un servicio falló, puedes reiniciarlo:
+   $ docker-compose restart
+   
+Para reiniciar un solo servicio:
+   $ docker-compose restart frontend
+
+--------------------------------------------------------------------
+6. ACCESO A LOS CONTENEDORES (BASH)
+--------------------------------------------------------------------
+Si necesitas entrar a la consola de un contenedor en ejecución:
+   $ docker exec -it [id_o_nombre_del_contenedor] /bin/bash
+   (o /bin/sh dependiendo de la imagen base)
+
+Ejemplo para entrar a la base de datos MySQL:
+   $ docker exec -it app-despachos-mysql-1 mysql -u root -p
+
+--------------------------------------------------------------------
+7. PUERTOS EXPUESTOS POR DEFECTO
+--------------------------------------------------------------------
+Frontend:           http://localhost:8090
+Microservicio Despacho: http://localhost:8081
+Microservicio Ventas:   http://localhost:8082
+Base de Datos MySQL:    localhost:3307
+
+(Estos puertos pueden variar si modificaste el archivo .env)

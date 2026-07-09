@@ -2,27 +2,33 @@ import { useState } from "react";
 import { CardComponent } from "./CardComponent";
 import { TableCompras } from "./TableCompras";
 import { TableDespachos } from "./TableDespachos";
+import { ShoppingCartIcon, TruckIcon } from "@heroicons/react/24/outline";
 
 export const PruebaCards = () => {
   const [tablaCompras, setTablaCompras] = useState(false);
   const [tablaOrdenes, setTablaOrdenes] = useState(false);
 
   return (
-    <section>
-      <div className="flex justify-center">
+    <section className="animate-fade-in-up">
+      {/* Contenedor de Tarjetas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <CardComponent
-          title="Consultar Ordenes de compra 💰"
-          description="Revisa las últimas oc realizadas para generar su despacho"
-          buttonText="Consultar"
+          title="Órdenes de Compra"
+          description="Revisa las últimas órdenes realizadas y genera nuevos despachos."
+          buttonText="Consultar Compras"
+          icon={<ShoppingCartIcon className="w-8 h-8 text-teal-500" />}
+          isActive={tablaCompras}
           onClick={() => {
             setTablaCompras(true);
             setTablaOrdenes(false);
           }}
         />
         <CardComponent
-          title="Revisar Ordenes de despacho 🚚"
-          description="Consulta los despachos realizados, modifica los registros de intentos o cierra la orden"
-          buttonText="Consultar"
+          title="Órdenes de Despacho"
+          description="Consulta despachos activos, modifica intentos o cierra órdenes."
+          buttonText="Consultar Despachos"
+          icon={<TruckIcon className="w-8 h-8 text-emerald-500" />}
+          isActive={tablaOrdenes}
           onClick={() => {
             setTablaCompras(false);
             setTablaOrdenes(true);
@@ -30,9 +36,18 @@ export const PruebaCards = () => {
         />
       </div>
 
-      <section>
-        {tablaCompras && <TableCompras />}
-        {tablaOrdenes && <TableDespachos />}
+      {/* Contenedor de Tablas con transición simple */}
+      <section className="transition-all duration-500 ease-in-out">
+        {tablaCompras && (
+          <div className="animate-fade-in">
+            <TableCompras />
+          </div>
+        )}
+        {tablaOrdenes && (
+          <div className="animate-fade-in">
+            <TableDespachos />
+          </div>
+        )}
       </section>
     </section>
   );

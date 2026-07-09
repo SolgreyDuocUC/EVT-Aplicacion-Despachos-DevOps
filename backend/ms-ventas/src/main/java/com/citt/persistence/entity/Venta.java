@@ -25,7 +25,7 @@ public class Venta {
     private Long idVenta;
     @NotBlank(message = "La dirección es obligatoria")
     private String direccionCompra;
-    private int valorCompra;
+    private Integer valorCompra;
     @NotNull(message = "Fecha de compra es obligatoria")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  // Especifica el formato de fecha
     private LocalDate fechaCompra;

@@ -1,24 +1,44 @@
 import React from "react";
 
-export const CardComponent = ({ title, description, buttonText, onClick }) => {
+export const CardComponent = ({ title, description, buttonText, icon, onClick, isActive }) => {
   return (
-    <div className=" p-10 bg-white border border-gray-200 rounded-lg shadow dark:bg-white mb-20 mr-10 h-full overflow-hidden">
-      <a href="#">
-        <h5 className="mb-1 text-lg font-bold tracking-tight text-gray-900 dark:text-gray-800">
+    <div 
+      className={`relative p-8 bg-white/80 backdrop-blur-xl border rounded-2xl shadow-sm transition-all duration-300 flex flex-col h-full overflow-hidden group
+        ${isActive 
+          ? 'border-teal-500 ring-2 ring-teal-500/20 shadow-teal-500/10 shadow-lg scale-[1.02]' 
+          : 'border-slate-200 hover:border-teal-300 hover:shadow-xl hover:-translate-y-1'
+        }`}
+    >
+      {/* Icono de fondo decorativo (Marca de agua) */}
+      <div className="absolute -bottom-6 -right-6 opacity-[0.03] text-teal-900 group-hover:opacity-[0.06] group-hover:scale-110 transition-all duration-500">
+        {icon}
+      </div>
+
+      <div className="flex items-center gap-4 mb-4">
+        <div className={`p-3 rounded-xl shadow-sm ${isActive ? 'bg-teal-50' : 'bg-slate-50 group-hover:bg-teal-50 transition-colors'}`}>
+          {icon}
+        </div>
+        <h5 className="text-xl font-bold tracking-tight text-slate-800">
           {title}
         </h5>
-      </a>
-      <p className="mb-5 font-normal text-gray-700 dark:text-gray-400">
+      </div>
+      
+      <p className="mb-8 text-slate-500 leading-relaxed flex-1">
         {description}
       </p>
-      <div className="flex justify-center">
+      
+      <div className="mt-auto">
         <button
           onClick={onClick}
-          className="inline-flex items-center justify-center w-80 h-10 px-3 py-2 text-base text-center text-white bg-teal-500 border rounded-xl font-bold hover:bg-teal-600 transition-all duration-500 "
+          className={`w-full inline-flex items-center justify-center gap-2 h-12 px-5 text-sm font-bold text-white rounded-xl shadow-md transition-all duration-300
+            ${isActive 
+              ? 'bg-teal-600 hover:bg-teal-700 shadow-teal-600/30' 
+              : 'bg-slate-800 hover:bg-teal-500 hover:shadow-teal-500/30'
+            }`}
         >
-          {buttonText}
+          <span>{buttonText}</span>
           <svg
-            className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+            className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
