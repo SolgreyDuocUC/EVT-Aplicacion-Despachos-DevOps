@@ -4,11 +4,8 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    resolver 127.0.0.11 valid=30s;
-
     location /api/v1/ventas {
-        set $upstream_ventas ${VENTAS_URL};
-        proxy_pass $upstream_ventas;
+        proxy_pass ${VENTAS_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -16,8 +13,7 @@ server {
     }
 
     location /api/v1/despachos {
-        set $upstream_despacho ${DESPACHO_URL};
-        proxy_pass $upstream_despacho;
+        proxy_pass ${DESPACHO_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
