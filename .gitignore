@@ -10,4 +10,29 @@ mysql-data/
 .DS_Store
 *.iml
 .idea/
+# Variables de entorno con secretos (nunca versionar)
+.env
+.env.*
+!.env.example
+
+# Volúmenes/datos locales de Docker
+mysql-data/
+
+# Sistema operativo / editores
+.DS_Store
+*.iml
+.idea/
 .vscode/
+
+# Documentación
+*.md
+!README.md
+
+# Terraform
+.terraform/
+.terraform.*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.exe
